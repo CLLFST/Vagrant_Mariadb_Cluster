@@ -1,0 +1,7 @@
+    - name: Creating Galera configuration file for SQL0.
+      become: true
+      shell: cp /vagrant/provisioning/config_files/galera1.cnf /etc/mysql/conf.d/galera.cnf
+
+    - name: Starting the Cluster.
+      become: true
+      shell: galera_new_cluster

@@ -1,0 +1,11 @@
+    - name: Installing HAproxy.
+      become: true
+      apt: name=haproxy state=present update_cache=yes
+
+    - name: Configuring HAproxy.
+      become: true
+      shell: cat /vagrant/provisioning/config_files/haproxy.cnf >> /etc/haproxy/haproxy.cnf
+
+    - name: Starting HAproxy with new config.
+      become: true
+      shell: systemctl stop haproxy ; systemctl start haproxy
