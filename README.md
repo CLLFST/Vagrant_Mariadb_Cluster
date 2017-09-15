@@ -5,5 +5,5 @@ MariaDB_Cluster_Deployer is a solution to auto deploy a high availability data s
 ```
 git clone https://github.com/NRHelmi/Vagrant_Mariadb_Cluster
 cd Vagrant_Mariadb_Cluster
-vagrant up
+vagrant up --provision
 ```
