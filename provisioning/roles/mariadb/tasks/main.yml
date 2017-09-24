@@ -1,0 +1,33 @@
+    - name: Installing MariaDB Repository (Software properties common).
+      become: true
+      apt: name=software-properties-common state=present update_cache=yes
+
+    - name: Installing MariaDB Repository (Adding repository key).
+      become: true
+      apt_key: keyserver=keyserver.ubuntu.com id=0xcbcb082a1bb943db
+
+    - name: Installing MariaDB Repository (Adding repository).
+      become: true
+      apt_repository: repo='deb [arch=amd64,i386] http://www.ftp.saix.net/DB/mariadb/repo/10.1/debian jessie main'
+
+    - name: Updating apt cache.
+      become: true
+      apt: update_cache=yes
+
+    - name: Installing MariaDB, rsync and Galera.
+      become: true
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - rsync
+        - galera-3
+        - mariadb-server
+
+    - name: Stopping MariaDB service.
+      become: true
+      shell: systemctl stop mysql
+
+    - name: Editing debian Configuration file for MariaDB user.
+      become: true
+      shell: cp /vagrant/provisioning/config_files/debian.cnf /etc/mysql/

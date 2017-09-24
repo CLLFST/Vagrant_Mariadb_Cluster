@@ -1,85 +1,19 @@
 - hosts: SQL0, SQL1, SQL2
-  tasks:
-
-    - name: Installing MariaDB Repository (Software properties common).
-      become: true
-      apt: name=software-properties-common state=present update_cache=yes
-
-    - name: Installing MariaDB Repository (Adding repository key).
-      become: true
-      apt_key: keyserver=keyserver.ubuntu.com id=0xcbcb082a1bb943db
-
-    - name: Installing MariaDB Repository (Adding repository).
-      become: true
-      apt_repository: repo='deb [arch=amd64,i386] http://www.ftp.saix.net/DB/mariadb/repo/10.1/debian jessie main'
-
-    - name: Updating apt cache.
-      become: true
-      apt: update_cache=yes
-
-    - name: Installing MariaDB, rsync and Galera.
-      become: true
-      apt:
-        name: "{{ item }}"
-        state: present
-      with_items:
-        - rsync
-        - galera-3
-        - mariadb-server
-
-    - name: Stopping MariaDB service.
-      become: true
-      shell: systemctl stop mysql
-
-    - name: Editing debian Configuration file for MariaDB user.
-      become: true
-      shell: cp /vagrant/provisioning/config_files/debian.cnf /etc/mysql/
-
+  roles: 
+    - role: mariadb
 
 - hosts: SQL0
-  tasks:
-
-    - name: Creating Galera configuration file for SQL0.
-      become: true
-      shell: cp /vagrant/provisioning/config_files/galera1.cnf /etc/mysql/conf.d/galera.cnf
-
-    - name: Starting the Cluster.
-      become: true
-      shell: galera_new_cluster
+  roles:
+    - role: sql0
 
 - hosts: SQL1
-  tasks:
-
-    - name: Creating Galera configuration file for SQL1.
-      become: true
-      shell: cp /vagrant/provisioning/config_files/galera2.cnf /etc/mysql/conf.d/galera.cnf
-
-    - name: Starting MariaDB service (joining the Cluster).
-      become: true
-      shell: systemctl start mysql
+  roles:
+    - role: sql1
 
 - hosts: SQL2
-  tasks:
-
-    - name: Creating Galera configuration file for SQL2.
-      become: true
-      shell: cp /vagrant/provisioning/config_files/galera3.cnf /etc/mysql/conf.d/galera.cnf
-
-    - name: Starting MariaDB service (joining the Cluster).
-      become: true
-      shell: systemctl start mysql
+  roles:
+    - role: sql2
 
 - hosts: LB
-  tasks:
-
-    - name: Installing HAproxy.
-      become: true
-      apt: name=haproxy state=present update_cache=yes
-
-    - name: Configuring HAproxy.
-      become: true
-      shell: cat /vagrant/provisioning/config_files/haproxy.cnf >> /etc/haproxy/haproxy.cnf
-
-    - name: Starting HAproxy with new config.
-      become: true
-      shell: systemctl stop haproxy ; systemctl start haproxy
+  roles:
+    - role: haproxy

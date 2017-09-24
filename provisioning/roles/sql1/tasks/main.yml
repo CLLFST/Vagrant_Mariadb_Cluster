@@ -1,0 +1,7 @@
+    - name: Creating Galera configuration file for SQL1.
+      become: true
+      shell: cp /vagrant/provisioning/config_files/galera2.cnf /etc/mysql/conf.d/galera.cnf
+
+    - name: Starting MariaDB service (joining the Cluster).
+      become: true
+      shell: systemctl start mysql
